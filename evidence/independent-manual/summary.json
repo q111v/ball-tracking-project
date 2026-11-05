@@ -1,0 +1,29 @@
+{
+  "frames": 174,
+  "observed_frames": 26,
+  "tracked_frames": 20,
+  "observation_fraction": 0.14942528735632185,
+  "tracked_fraction": 0.11494252873563218,
+  "unique_ids": [
+    1,
+    3
+  ],
+  "processing_fps": 0.550497039422116,
+  "python": "3.12.14",
+  "initialization": "manual",
+  "initial_box": [
+    352.0,
+    320.0,
+    26.0,
+    26.0
+  ],
+  "device": "cpu",
+  "threads": 1,
+  "effective_threads": 1,
+  "mode": "bidirectional",
+  "profile": "broadcast",
+  "model": "/workspace/ball-tracking-project/models/basketball.pt",
+  "detector_sha256": "f1648e6bbfa13abfc0d135823398e8cdc4b1c01faab81abe33dc025d27ea8125",
+  "input_sha256": "dbfc6d7ccc143c33666203679188fad98b27d605f71a38172c7e3ef49136c3d3",
+  "notes": "Coverage is not accuracy. Missing frames have no invented boxes. Bidirectional mode is offline and may delay display by one chunk."
+}

@@ -1,12 +1,20 @@
-# 基于 YOLO 与 ByteTrack 的球体检测与运动轨迹跟踪系统
+# YOLO + ByteTrack 篮球跟踪改进版（阶段性测试版）
 
-Python 课程设计；以命令行提供完整视频处理流程。目标环境：Windows 11、Python **3.11 / 3.12**、PyCharm + Anaconda。默认使用公开 COCO 预训练 `yolov8s.pt`，同时保留轻量 `yolo11n.pt`，通过 **Ultralytics 内置 ByteTrack** 跟踪，不依赖独立 ByteTrack、YOLOX 或 supervision 框架。`lap` 是内置跟踪所需的匹配计算依赖。
+**请先看 `开始使用.md`。当前不是“任意篮球视频都精准”的完成版。**
 
-> **推荐入口：** 安装依赖后运行 `python run_verified_demo.py`。随包提供真实近景球体视频，使用 YOLOv8s、可选颜色观测辅助和内置 ByteTrack 产生 ID 与紫红色运动轨迹；完整方法及适用范围见 `docs/VERIFIED_DEMO.md`。原远景网球失败记录保留，不宣称已解决远景高速球问题。
+- 测试随包NBA原片：安装后双击 **`run_nba.cmd`**。
+- 测试自己的视频：双击 **`篮球视频测试.cmd`**，选文件、视频类型，再框选首帧篮球并按 Enter。
+- 无界面测试：`python run_nba.py --no-display`。
 
-![已验证的球体ID与运动轨迹](evidence/verified-demo/preview.jpg)
+![原NBA片段实际输出](evidence/nba-precision/preview.jpg)
 
-随包4秒真实近景视频的最终复跑：120/120帧保持同一ID、零缺失，结果视频在 `evidence/verified-demo/annotated.mp4`。这是对指定片段的验证，不保证任意视频；46个观察框来自可选颜色辅助。
+**实测情况：** 原NBA片段117帧中70帧有确认ID，均为ID=1；8个可见中心检查点命中7个，命中点平均误差1.13像素；9个已知人头/篮筐误跟检查点均未误跟。第106帧仍漏检，不能称为全程逐帧精准。
+
+**其他视频：** 另一段NBA比赛的独立验证未通过（手动初始化后仍仅命中1/3个检查点）；近景训练短片有改善，但检查样本少。不要把原片调优结果或代码测试通过当作泛化保证。完整数据、失败记录和方法见 [实验报告](docs/NBA_RESULTS.md)。
+
+新篮球模式使用公开预训练YOLO上的领域微调、多尺度局部搜索、人体关键点/光流排除人头、离线双向观察、时间一致性筛选和Ultralytics内置ByteTrack。训练标注与复现工具随包提供，运行无需重新训练。CPU可离线处理但比较慢，默认不保证实时。
+
+新视频操作说明见 [篮球视频指南](docs/BASKETBALL_GUIDE.md)。原通用球体模式和原近景演示仍保留。
 
 ## 1. Windows 安装与第一次运行
 
@@ -17,7 +25,7 @@ conda create -n balltrack python=3.12 -y
 conda activate balltrack
 python -m pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -r requirements-dev.txt
-python run_verified_demo.py
+python run_nba.py
 ```
 
 使用 Python 3.11 时仅将建环境命令改为 `python=3.11`。先装 CPU 版 PyTorch，再装项目依赖，可避免默认安装不需要的 GPU 组件。首次安装需要网络；项目随附公开预训练权重和小型演示视频，不需要训练。项目目录建议放在较短路径，例如 `D:\Projects\ball-tracking-project`。命令必须在项目根目录执行。
@@ -29,7 +37,7 @@ python run_verified_demo.py
 1. Open 打开项目根目录。
 2. Settings → Project → Python Interpreter → Add Interpreter → Existing Conda Environment，选 `balltrack` 环境的 `python.exe`。
 3. Run/Debug Configurations 新建 Python：Script path 选择 `main.py`，Working directory 选择项目根目录。
-4. 推荐将 Script path 改选 `run_verified_demo.py`，Parameters 留空，直接运行。
+4. 推荐将 Script path 改选 `run_nba.py`，Parameters 留空，直接运行。
 5. 如命令行能运行而 PyCharm 提示缺包，检查解释器是否选到了同一 Conda 环境。
 
 ## 2. 输入、保存与 GPU

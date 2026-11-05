@@ -19,9 +19,9 @@ if errorlevel 1 goto failed
 call conda run --prefix "%PROJECT_ENV%" python -m pytest -q
 if errorlevel 1 goto failed
 set "TEST_RUN=runs\windows_online_%RANDOM%_%RANDOM%"
-call conda run --prefix "%PROJECT_ENV%" python run_verified_demo.py --no-display --output "%TEST_RUN%"
+call conda run --prefix "%PROJECT_ENV%" python run_nba.py --no-display --basketball-pass forward --max-frames 10 --output "%TEST_RUN%"
 if errorlevel 1 goto failed
-echo Finished. See %TEST_RUN% and docs\VERIFIED_DEMO.md.
+echo Finished. See %TEST_RUN% and docs\BASKETBALL_GUIDE.md.
 echo In PyCharm, select .conda-env\python.exe as the interpreter.
 pause
 exit /b 0

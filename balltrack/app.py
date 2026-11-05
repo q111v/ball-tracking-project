@@ -17,6 +17,7 @@ from ultralytics import YOLO
 
 from .history import Trails
 from .color_assist import ColorAssist
+from .runtime import configure_model
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -26,6 +27,11 @@ def parser():
     source = p.add_mutually_exclusive_group(required=True)
     source.add_argument("--video", type=Path)
     source.add_argument("--camera", type=int)
+    p.add_argument("--basketball-profile", choices=["auto","broadcast","closeup"], default="auto")
+    p.add_argument("--basketball-pass", choices=["bidirectional","forward"], default="bidirectional")
+    p.add_argument("--basketball-model", type=Path, help="Optional compatible trained basketball YOLO model")
+    p.add_argument("--initial-box", type=float, nargs=4, metavar=("X","Y","W","H"), help="Optional first-frame ball selection for reproducible headless runs")
+    p.add_argument("--select-ball", action="store_true", help="Select the initial ball in the first frame")
     p.add_argument("--basketball-mode", action="store_true", help="Single basketball broadcast mode with local YOLO and head exclusion")
     p.add_argument("--color-assist", action="store_true", help="Optional YOLO-seeded color observations for a single distinct-color ball")
     p.add_argument("--model", default="yolov8s.pt")
@@ -54,7 +60,7 @@ def run(args):
         raise ValueError("Output folder is not empty; use a new --output folder")
     args.output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(args.threads)
-    model = YOLO(args.model)
+    model = configure_model(YOLO(args.model), args.threads)
     names = model.names
     classes = [i for i, name in names.items() if name == "sports ball"]
     if not classes:

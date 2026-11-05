@@ -1,12 +1,27 @@
 {
   "basketball.pt": {
-    "url": "https://raw.githubusercontent.com/johnxie301/Yolo_v8n_basketball_shooting_practice/main/best.pt",
-    "repository": "https://github.com/johnxie301/Yolo_v8n_basketball_shooting_practice",
-    "sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
-    "description": "Public pretrained basketball shooting model, ball class 0. No training performed in this project."
+    "description": "Domain-fine-tuned YOLOv8n; initialized from the public basketball_base.pt, not trained from scratch.",
+    "sha256": "f1648e6bbfa13abfc0d135823398e8cdc4b1c01faab81abe33dc025d27ea8125",
+    "parent_sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
+    "annotations": "training/annotations.json",
+    "training_source": "data/nba/nba.mp4",
+    "epochs": 15,
+    "seed": 7,
+    "heldout_independent_videos": [
+      "video_2.mp4",
+      "video_3.mp4",
+      "video_test_5.mp4"
+    ],
+    "annotation_sha256": "84ff5d48dd0910d2a18d79751a7825989968ee1d07ebba730f3cff5adb5bb566"
   },
   "yolov8n-pose.pt": {
     "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-pose.pt",
     "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+  },
+  "basketball_base.pt": {
+    "url": "https://raw.githubusercontent.com/johnxie301/Yolo_v8n_basketball_shooting_practice/605d2c07587c6f8c63e35c062075508d062b93df/best.pt",
+    "repository": "https://github.com/johnxie301/Yolo_v8n_basketball_shooting_practice",
+    "sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
+    "description": "Public pretrained basketball shooting model, ball class 0. No training performed in this project."
   }
 }

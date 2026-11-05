@@ -1,0 +1,17 @@
+{
+  "independent2": {
+    "url": "https://raw.githubusercontent.com/abdullahtarek/basketball_analysis/main/input_videos/video_2.mp4",
+    "sha256": "dbfc6d7ccc143c33666203679188fad98b27d605f71a38172c7e3ef49136c3d3",
+    "training": false
+  },
+  "practice": {
+    "url": "https://raw.githubusercontent.com/avishah3/AI-Basketball-Shot-Detection-Tracker/4eb004437919f3667dce3d0a95575a510d763485/video_test_5.mp4",
+    "source_frames_total": 3378,
+    "used_source_frames": [
+      0,
+      90
+    ],
+    "training": false,
+    "note": "First90 frames, unchanged order and speed; third-party footage retains original rights."
+  }
+}
