@@ -4,15 +4,15 @@ from datetime import datetime
 from pathlib import Path
 
 # 换视频只改这一行。Windows 路径前面的 r 请保留。
-VIDEO_PATH = r"videos/nba.mp4"
+VIDEO_PATH = r"videos/basketball_10s.mp4"
 # 例如：VIDEO_PATH = r"C:\Users\QQQ\Desktop\篮球测试.mp4"
 
 DEVICE = "cpu"  # 有可用 NVIDIA CUDA 环境时可改成 "0"
-SCENE = "broadcast"  # 比赛转播用 broadcast；近距离投篮用 closeup
+SCENE = "closeup"  # 比赛转播用 broadcast；近距离投篮用 closeup
 SELECT_BALL = False  # True：在首帧框选篮球，回车确认
 SAVE_VIDEO = True
 SHOW_WINDOW = True
-PROCESSING_MODE = "bidirectional"  # 双向处理较慢；forward 为单向处理
+PROCESSING_MODE = "auto"  # auto：近景用单向处理；转播用双向处理
 THREADS = 2
 
 # 仅影响显示轨迹，CSV 仍保留原始检测坐标。

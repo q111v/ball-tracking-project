@@ -66,3 +66,9 @@ TRAIL_SMOOTHING = 0.8
 这是近似二维补偿：观众与球场的视差、快速摇镜、极端缩放和动态遮挡仍可能导致估计失败。失败时宁可清空旧线，不能保证每一帧都有连续轨迹。运动状态数量与轨迹重置次数写入 summary.json，便于检查补偿是否经常失败。
 
 只更新显示功能时替换 main.py、balltrack/video.py，并添加 balltrack/motion.py 与 balltrack/display_trail.py；不需要替换模型或重新安装依赖。替换 main.py 前保留自己的 VIDEO_PATH 配置。
+
+## closeup 跟踪修复版
+
+默认视频现为 videos/basketball_10s.mp4，SCENE="closeup"，PROCESSING_MODE="auto"。近景使用单向处理，转播使用原双向处理。新的 balltrack/closeup.py 保留全图语义上下文，排除篮圈/球网形状的重复球框，并在短时漏检时尝试局部放大补检。强全图观测可以重新捕获球，避免一直搜索错误的旧位置。近景不再逐帧运行人体姿态模型，broadcast 继续保留姿态排除逻辑。
+
+第一阶段使用方法见 UPDATE_CLOSEUP.md，完整对比见 validation/closeup/。有球网排除与速度改进不代表所有篮球视频都能精准跟踪。

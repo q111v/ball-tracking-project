@@ -1,0 +1,114 @@
+{
+  "visible_points": {
+    "0": [
+      655,
+      386
+    ],
+    "10": [
+      498,
+      371
+    ],
+    "30": [
+      431,
+      149
+    ],
+    "40": [
+      408,
+      55
+    ],
+    "50": [
+      388,
+      78
+    ],
+    "70": [
+      398,
+      212
+    ],
+    "80": [
+      640,
+      394
+    ],
+    "90": [
+      726,
+      444
+    ],
+    "100": [
+      740,
+      344
+    ],
+    "130": [
+      707,
+      434
+    ],
+    "160": [
+      665,
+      440
+    ],
+    "200": [
+      619,
+      131
+    ],
+    "210": [
+      511,
+      74
+    ],
+    "220": [
+      423,
+      112
+    ],
+    "230": [
+      367,
+      217
+    ],
+    "250": [
+      765,
+      449
+    ],
+    "260": [
+      828,
+      365
+    ],
+    "280": [
+      758,
+      335
+    ],
+    "290": [
+      740,
+      405
+    ]
+  },
+  "net_false_positive_checks": [
+    0,
+    10,
+    20,
+    40,
+    50,
+    80,
+    100,
+    110,
+    120,
+    130,
+    140,
+    150,
+    160,
+    170,
+    180,
+    190,
+    200,
+    210,
+    220,
+    240,
+    250,
+    260,
+    270,
+    280,
+    290
+  ],
+  "net_center": [
+    377,
+    193
+  ],
+  "net_check_radius_px": 30,
+  "center_hit_radius_px": 25,
+  "notes": "19 manually reviewed clear-ball checks; candidate-assisted, nonrandom selection; approximate integer centers. Not full ground truth or independent accuracy benchmark. Rim/occlusion-ambiguous frames omitted from visible checks. Checks not used for training or clip coordinates in code."
+}

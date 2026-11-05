@@ -1,0 +1,28 @@
+{
+  "visible_checks": 19,
+  "hits": 8,
+  "missed_frames": [
+    0,
+    10,
+    50,
+    70,
+    100,
+    130,
+    160,
+    200,
+    210,
+    220,
+    230
+  ],
+  "matched_mean_center_error_px": 2.180994511602984,
+  "net_checks": 25,
+  "false_net_frames": [
+    10,
+    20,
+    120,
+    130,
+    140,
+    150,
+    160
+  ]
+}

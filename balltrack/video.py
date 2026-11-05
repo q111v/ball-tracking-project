@@ -71,6 +71,8 @@ def process_video(
     trail_seconds=0.7,
     trail_smoothing=0.8,
 ):
+    if mode == "auto":
+        mode = "forward" if profile == "closeup" else "bidirectional"
     if mode not in ("forward", "bidirectional"):
         raise ValueError("PROCESSING_MODE must be forward or bidirectional")
     if profile not in ("auto", "broadcast", "closeup"):

@@ -13,6 +13,7 @@ from ultralytics import YOLO
 from ultralytics.engine.results import Boxes
 from ultralytics.trackers.byte_tracker import BYTETracker
 from .head_memory import HeadMemory
+from .closeup import CloseupDetector
 
 
 def head_regions(keypoints, person):
@@ -102,6 +103,11 @@ class BasketballTracker:
         self.roi_size = roi_size
         self.reset()
         self.tracker = new_tracker() if tracking else None
+        self.closeup = (
+            CloseupDetector(self.model, device, self.classes)
+            if profile == "closeup"
+            else None
+        )
 
     def reset(self):
         self.center = None
@@ -113,6 +119,8 @@ class BasketballTracker:
         self.heads = []
 
     def seed(self, image, observation):
+        if getattr(self, "closeup", None) is not None:
+            self.closeup.seed(image, observation)
         box, _, source = observation
         if source == "manual_initialization":
             self.manual_lock = True
@@ -217,6 +225,9 @@ class BasketballTracker:
         return scored
 
     def observe(self, image, heads=None):
+        if self.closeup is not None:
+            self.heads = []
+            return self.closeup.observe(image)
         h, w = image.shape[:2]
         scale = max(h, w) / 1280
         if self.misses >= 30 and not self.manual_lock:
