@@ -146,15 +146,24 @@ class CloseupDetector:
             for box, age in self.equipment_memory:
                 if age >= 15:
                     continue
-                corners = np.array([[box[0],box[1]],[box[2],box[1]],[box[2],box[3]],[box[0],box[3]]])
-                moved = corners @ matrix[:,:2].T + matrix[:,2]
-                remembered.append((np.r_[moved.min(axis=0),moved.max(axis=0)],age+1))
+                corners = np.array(
+                    [
+                        [box[0], box[1]],
+                        [box[2], box[1]],
+                        [box[2], box[3]],
+                        [box[0], box[3]],
+                    ]
+                )
+                moved = corners @ matrix[:, :2].T + matrix[:, 2]
+                remembered.append(
+                    (np.r_[moved.min(axis=0), moved.max(axis=0)], age + 1)
+                )
         candidates, equipment = self.predict(image, (0, 0, w, h), True)
         for box in equipment:
-            remembered = [(old,age) for old,age in remembered if iou(box,old)<.6]
-            remembered.append((box,0))
+            remembered = [(old, age) for old, age in remembered if iou(box, old) < 0.6]
+            remembered.append((box, 0))
         self.equipment_memory = remembered[-40:]
-        self.equipment = [box for box,age in self.equipment_memory]
+        self.equipment = [box for box, age in self.equipment_memory]
         chosen = self.choose(image, candidates, prediction)
         # Global context prevents a tight crop from confusing clothing or net with a ball.
         # Recover low/missing full-frame detections at a second scale near the last observation.

@@ -50,25 +50,26 @@ def test_no_observation_is_invented_and_elapsed_motion_used():
 
 
 def test_equipment_memory_survives_one_missing_semantic_detection():
-    d=detector()
-    d.camera=SimpleNamespace(update=lambda image:(np.eye(2,3),'ok'))
-    net=np.array([100,100,140,140],float)
-    outputs=iter([([], [net]),([],[])])
-    d.predict=lambda *args:next(outputs)
-    d.observe(np.zeros((540,960,3),np.uint8))
-    d.observe(np.zeros((540,960,3),np.uint8))
-    assert len(d.equipment)==1
-    assert np.allclose(d.equipment[0],net)
+    d = detector()
+    d.camera = SimpleNamespace(update=lambda image: (np.eye(2, 3), "ok"))
+    net = np.array([100, 100, 140, 140], float)
+    outputs = iter([([], [net]), ([], [])])
+    d.predict = lambda *args: next(outputs)
+    d.observe(np.zeros((540, 960, 3), np.uint8))
+    d.observe(np.zeros((540, 960, 3), np.uint8))
+    assert len(d.equipment) == 1
+    assert np.allclose(d.equipment[0], net)
 
 
 def test_equipment_memory_moves_with_camera_and_expires():
-    d=detector()
-    matrix=np.array([[1.,0.,5.],[0.,1.,2.]])
-    d.camera=SimpleNamespace(update=lambda image:(matrix,'ok'))
-    d.equipment_memory=[(np.array([100,100,140,140],float),0)]
-    d.predict=lambda *args:([],[])
-    image=np.zeros((540,960,3),np.uint8)
+    d = detector()
+    matrix = np.array([[1.0, 0.0, 5.0], [0.0, 1.0, 2.0]])
+    d.camera = SimpleNamespace(update=lambda image: (matrix, "ok"))
+    d.equipment_memory = [(np.array([100, 100, 140, 140], float), 0)]
+    d.predict = lambda *args: ([], [])
+    image = np.zeros((540, 960, 3), np.uint8)
     d.observe(image)
-    assert np.allclose(d.equipment[0],[105,102,145,142])
-    for _ in range(15):d.observe(image)
-    assert d.equipment==[]
+    assert np.allclose(d.equipment[0], [105, 102, 145, 142])
+    for _ in range(15):
+        d.observe(image)
+    assert d.equipment == []

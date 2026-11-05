@@ -20,6 +20,7 @@ from .display_trail import DisplayTrail
 from collections import Counter
 from .temporal import select_trajectory, select_anchored_trajectory
 from .runtime import configure_model
+from .occlusion import ShortGapPredictor
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -70,6 +71,8 @@ def process_video(
     camera_compensation=True,
     trail_seconds=0.7,
     trail_smoothing=0.8,
+    predict_occlusion=False,
+    prediction_seconds=0.3,
 ):
     if mode == "auto":
         mode = "forward" if profile == "closeup" else "bidirectional"
@@ -106,6 +109,13 @@ def process_video(
     log = None
     trace = None
     frames = observed = tracked = 0
+    predicted_frames = 0
+    prediction_log = None
+    predictor = (
+        ShortGapPredictor(prediction_seconds, trail_seconds)
+        if predict_occlusion
+        else None
+    )
     ids = set()
     last_id = None
     display_trail = DisplayTrail(trail_seconds, trail_smoothing)
@@ -135,6 +145,23 @@ def process_video(
             ]
         )
         trace = (output / "observations.jsonl").open("w", encoding="utf-8")
+        if predictor is not None:
+            prediction_log = (output / "predictions.csv").open(
+                "w", newline="", encoding="utf-8"
+            )
+            prediction_table = csv.writer(prediction_log)
+            prediction_table.writerow(
+                [
+                    "frame",
+                    "time_s",
+                    "id",
+                    "center_x",
+                    "center_y",
+                    "uncertainty_px",
+                    "horizon_s",
+                    "source",
+                ]
+            )
         print(
             "Basketball processing started. Bidirectional mode is offline; please wait for each chunk.",
             flush=True,
@@ -332,6 +359,33 @@ def process_video(
                         frames, fps, matrix, tid, display_center, diameter
                     )
                     display_trail.draw(image, frames, fps)
+                    if predictor is not None:
+                        if observation is not None and tid < 0:
+                            predictor.clear()
+                            prediction = None
+                        else:
+                            measured = (
+                                None
+                                if observation is None
+                                else (tid, display_center, diameter)
+                            )
+                            prediction = predictor.update(
+                                frames, fps, matrix, measured, image.shape[:2]
+                            )
+                        predictor.draw(image, prediction)
+                        if prediction is not None:
+                            predicted_frames += 1
+                            prediction_table.writerow(
+                                [
+                                    frames,
+                                    frames / fps,
+                                    prediction["id"],
+                                    *map(float, prediction["center"]),
+                                    prediction["uncertainty_px"],
+                                    prediction["horizon_s"],
+                                    "predicted",
+                                ]
+                            )
                     rate = (frames + 1) / max(time.perf_counter() - started, 1e-9)
                     cv2.putText(
                         image,
@@ -382,6 +436,10 @@ def process_video(
         summary = dict(
             frames=frames,
             observed_frames=observed,
+            predicted_frames=predicted_frames,
+            predict_occlusion=predict_occlusion,
+            prediction_seconds=prediction_seconds,
+            prediction_notes="Predictions are short image-space extrapolations, not detections or calibrated confidence intervals. They never update ByteTrack or observation counts.",
             tracked_frames=tracked,
             observation_fraction=observed / frames,
             tracked_fraction=tracked / frames,
@@ -418,5 +476,7 @@ def process_video(
             log.close()
         if trace is not None:
             trace.close()
+        if prediction_log is not None:
+            prediction_log.close()
         if not (not show_window):
             cv2.destroyAllWindows()

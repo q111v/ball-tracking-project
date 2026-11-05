@@ -18,6 +18,8 @@ THREADS = 2
 # 仅影响显示轨迹，CSV 仍保留原始检测坐标。
 CAMERA_COMPENSATION = True  # 让历史轨迹随镜头平移、缩放
 TRAIL_SECONDS = 0.7  # 只保留最近 0.7 秒，可改为 0.5 或 1.0
+PREDICT_OCCLUSION = True  # 橙色虚线表示估计，紫色实线表示实际观测
+PREDICTION_SECONDS = 0.3  # 最长预测 0.3 秒；更长时不再画预测位置
 TRAIL_SMOOTHING = 0.8  # 新位置权重；1.0 表示不平滑
 
 
@@ -46,6 +48,8 @@ def main():
         camera_compensation=CAMERA_COMPENSATION,
         trail_seconds=TRAIL_SECONDS,
         trail_smoothing=TRAIL_SMOOTHING,
+        predict_occlusion=PREDICT_OCCLUSION,
+        prediction_seconds=PREDICTION_SECONDS,
     )
     print(f"处理完成，结果保存在：{output}")
     print(f"总帧数：{result['frames']}，处理 FPS：{result['processing_fps']:.2f}")

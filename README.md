@@ -72,3 +72,11 @@ TRAIL_SMOOTHING = 0.8
 默认视频现为 videos/basketball_10s.mp4，SCENE="closeup"，PROCESSING_MODE="auto"。近景使用单向处理，转播使用原双向处理。新的 balltrack/closeup.py 保留全图语义上下文，排除篮圈/球网形状的重复球框，并在短时漏检时尝试局部放大补检。强全图观测可以重新捕获球，避免一直搜索错误的旧位置。近景不再逐帧运行人体姿态模型，broadcast 继续保留姿态排除逻辑。
 
 第一阶段使用方法见 UPDATE_CLOSEUP.md，完整对比见 validation/closeup/。有球网排除与速度改进不代表所有篮球视频都能精准跟踪。
+
+## 第二阶段：短时遮挡预测
+
+当前分支启用 PREDICT_OCCLUSION=True，PREDICTION_SECONDS=0.3。实际观测轨迹为紫色实线，估计段为橙色虚线并显示 PREDICTED。漏检可能来自遮挡，也可能来自检测失败；程序不声称自动判断了遮挡的真实原因。
+
+预测模块 balltrack/occlusion.py 使用近期连续观测做图像坐标中的直线/二次拟合；最多外推 0.3 秒，并在历史不足、不稳定、移出画面或相机补偿失败时停止。预测单独写入 predictions.csv，不计入检测/跟踪成功率，不作为 ByteTrack 的真实观测。误差圆是经验显示范围，不是校准后的置信区间。重新观测后以实测为准，不强行连接明显不符或不同 ID 的轨迹。
+
+使用说明见 UPDATE_PREDICTION.md，预测效果与模拟遮挡验证见 validation/prediction/。切回 PREDICT_OCCLUSION=False 即回到仅实测显示，不需要更换模型。默认 closeup 单向处理可按当前及历史帧工作；broadcast 双向模式的检测本身使用离线信息，不应宣称整条处理流水线为实时因果预测。
