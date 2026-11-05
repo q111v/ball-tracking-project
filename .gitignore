@@ -1,10 +1,5 @@
 __pycache__/
-.pytest_cache/
+.idea/
 .venv/
-runs/
-*.pt
-
-.conda-env/
-
-data/verified/green_ball_full.mp4
-data/verified/basketball.mp4
+results/
+*.pyc

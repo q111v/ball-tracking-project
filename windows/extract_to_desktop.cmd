@@ -1,4 +1,0 @@
-@echo off
-powershell -NoProfile -STA -Command "Add-Type -AssemblyName System.Windows.Forms; $dialog=New-Object System.Windows.Forms.OpenFileDialog; $dialog.Title='Select ball-tracking-project.zip'; $dialog.Filter='ZIP archive (*.zip)|*.zip'; if($dialog.ShowDialog() -ne 'OK'){exit 1}; $desktop=[Environment]::GetFolderPath('Desktop'); if(-not $desktop){throw 'Desktop folder unavailable'}; $destination=Join-Path $desktop ('BallTracking-Course-'+(Get-Date -Format 'yyyyMMdd-HHmmss')); if(Test-Path -LiteralPath $destination){throw 'Destination already exists'}; New-Item -ItemType Directory -Path $destination -ErrorAction Stop | Out-Null; Expand-Archive -LiteralPath $dialog.FileName -DestinationPath $destination -ErrorAction Stop; Start-Process explorer.exe -ArgumentList $destination; Write-Host ('Extracted to: '+$destination)"
-if errorlevel 1 echo Extraction cancelled or failed.
-pause
