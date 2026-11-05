@@ -1,0 +1,332 @@
+[
+  {
+    "split": "train",
+    "frame": 0,
+    "ball_box": [
+      635.0298461914062,
+      365.37249755859375,
+      673.0900268554688,
+      405.20733642578125
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 10,
+    "ball_box": [
+      476.5458984375,
+      352.0472412109375,
+      518.7899169921875,
+      390.55712890625
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 30,
+    "ball_box": [
+      410.9029541015625,
+      130.2890625,
+      451.5296630859375,
+      168.85980224609375
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 40,
+    "ball_box": [
+      388.8306579589844,
+      36.24262237548828,
+      427.2864685058594,
+      73.89397430419922
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 50,
+    "ball_box": [
+      370.90283203125,
+      62.15507507324219,
+      405.554931640625,
+      94.15382385253906
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 70,
+    "ball_box": [
+      382.0508117675781,
+      198.13851928710938,
+      413.2539367675781,
+      226.69924926757812
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 80,
+    "ball_box": [
+      618.0970458984375,
+      371.5755615234375,
+      662.1094970703125,
+      415.41259765625
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 90,
+    "ball_box": [
+      703.808837890625,
+      422.9682922363281,
+      746.79833984375,
+      463.7025451660156
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 100,
+    "ball_box": [
+      718.9921264648438,
+      319.83819580078125,
+      761.3466186523438,
+      367.81280517578125
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 120,
+    "ball_box": [
+      709,
+      363,
+      741,
+      392
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 130,
+    "ball_box": [
+      688.8682861328125,
+      412.8061218261719,
+      725.4525146484375,
+      454.0420837402344
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 140,
+    "ball_box": [
+      726,
+      336,
+      753,
+      366
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 150,
+    "ball_box": [
+      722,
+      339,
+      744,
+      369
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 160,
+    "ball_box": [
+      644.8948974609375,
+      417.630859375,
+      685.3822021484375,
+      460.5299072265625
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 170,
+    "ball_box": [
+      701,
+      355,
+      732,
+      386
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 190,
+    "ball_box": [
+      673,
+      255,
+      702,
+      285
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 200,
+    "ball_box": [
+      597.804443359375,
+      111.79036712646484,
+      639.739990234375,
+      150.39553833007812
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 210,
+    "ball_box": [
+      491.86724853515625,
+      57.183921813964844,
+      530.1896362304688,
+      90.16643524169922
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 220,
+    "ball_box": [
+      403.61065673828125,
+      95.56669616699219,
+      440.67681884765625,
+      128.99693298339844
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 230,
+    "ball_box": [
+      351.90557861328125,
+      202.75694274902344,
+      381.9302978515625,
+      231.2052459716797
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 250,
+    "ball_box": [
+      744.73095703125,
+      427.5650939941406,
+      783.81591796875,
+      470.0310974121094
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 260,
+    "ball_box": [
+      813.4168701171875,
+      347.238525390625,
+      844.3265380859375,
+      383.300537109375
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 280,
+    "ball_box": [
+      737.3642578125,
+      312.0107421875,
+      779.328369140625,
+      357.88690185546875
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "train",
+    "frame": 290,
+    "ball_box": [
+      718.42822265625,
+      382.4460144042969,
+      761.211181640625,
+      427.0209655761719
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "val",
+    "frame": 41,
+    "ball_box": [
+      388,
+      35,
+      426,
+      73
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "val",
+    "frame": 121,
+    "ball_box": [
+      708,
+      360,
+      740,
+      392
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "val",
+    "frame": 141,
+    "ball_box": [
+      727,
+      337,
+      753,
+      366
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "val",
+    "frame": 151,
+    "ball_box": [
+      721,
+      337,
+      744,
+      367
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "val",
+    "frame": 171,
+    "ball_box": [
+      701,
+      354,
+      733,
+      385
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  },
+  {
+    "split": "val",
+    "frame": 191,
+    "ball_box": [
+      672,
+      249,
+      702,
+      280
+    ],
+    "auxiliary": "rim/net pseudo-labels from public base model"
+  }
+]

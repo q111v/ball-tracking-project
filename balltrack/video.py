@@ -21,6 +21,7 @@ from collections import Counter
 from .temporal import select_trajectory, select_anchored_trajectory
 from .runtime import configure_model
 from .occlusion import ShortGapPredictor
+from .scene import detect_scene
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -74,9 +75,7 @@ def process_video(
     predict_occlusion=False,
     prediction_seconds=0.3,
 ):
-    if mode == "auto":
-        mode = "forward" if profile == "closeup" else "bidirectional"
-    if mode not in ("forward", "bidirectional"):
+    if mode not in ("auto", "forward", "bidirectional"):
         raise ValueError("PROCESSING_MODE must be forward or bidirectional")
     if profile not in ("auto", "broadcast", "closeup"):
         raise ValueError("SCENE must be broadcast or closeup")
@@ -93,11 +92,23 @@ def process_video(
         raise ValueError("Use a new empty output directory")
     output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(threads)
-    default_model = "basketball_base.pt" if profile == "closeup" else "basketball.pt"
+    requested_profile = profile
+    pose_model = configure_model(YOLO(str(ROOT / "models/yolov8n-pose.pt")), threads)
+    scene_details = []
+    if profile == "auto":
+        profile, scene_details = detect_scene(video, pose_model, device)
+        print(f"Selected scene: {profile}", flush=True)
+    if mode == "auto":
+        mode = "forward" if profile == "closeup" else "bidirectional"
+    default_model = "basketball_closeup.pt" if profile == "closeup" else "basketball.pt"
     model = Path(basketball_model or ROOT / "models" / default_model)
+    if not model.is_file():
+        raise FileNotFoundError(
+            f"Missing model: {model}. Download the complete project package."
+        )
     detector = BasketballTracker(
         model,
-        pose=YOLO(str(ROOT / "models/yolov8n-pose.pt")),
+        pose=pose_model,
         tracking=False,
         device=device,
         profile=profile,
@@ -163,7 +174,12 @@ def process_video(
                 ]
             )
         print(
-            "Basketball processing started. Bidirectional mode is offline; please wait for each chunk.",
+            f"Basketball processing started: {mode}. "
+            + (
+                "Please wait for each offline chunk."
+                if mode == "bidirectional"
+                else "Processing frames in order."
+            ),
             flush=True,
         )
         manual_initialization = bool(select_ball or initial_box)
@@ -370,7 +386,12 @@ def process_video(
                                 else (tid, display_center, diameter)
                             )
                             prediction = predictor.update(
-                                frames, fps, matrix, measured, image.shape[:2]
+                                frames,
+                                fps,
+                                matrix,
+                                measured,
+                                image.shape[:2],
+                                blocked_heads=head_cache[i],
                             )
                         predictor.draw(image, prediction)
                         if prediction is not None:
@@ -436,6 +457,9 @@ def process_video(
         summary = dict(
             frames=frames,
             observed_frames=observed,
+            yolo_observed_frames=observed,
+            appearance_recovered_frames=0,
+            recovery_notes="All observed boxes come from YOLO. Experimental color recovery was rejected and is not used.",
             predicted_frames=predicted_frames,
             predict_occlusion=predict_occlusion,
             prediction_seconds=prediction_seconds,
@@ -453,6 +477,8 @@ def process_video(
             effective_threads=torch.get_num_threads(),
             mode=mode,
             profile=profile,
+            requested_profile=requested_profile,
+            scene_selection=scene_details,
             camera_compensation=camera_compensation,
             camera_motion_states=dict(motion_states),
             trail_seconds=trail_seconds,

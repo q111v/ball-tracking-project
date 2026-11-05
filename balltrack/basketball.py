@@ -104,7 +104,7 @@ class BasketballTracker:
         self.reset()
         self.tracker = new_tracker() if tracking else None
         self.closeup = (
-            CloseupDetector(self.model, device, self.classes)
+            CloseupDetector(self.model, device, self.classes, self.pose, head_regions)
             if profile == "closeup"
             else None
         )
@@ -226,8 +226,9 @@ class BasketballTracker:
 
     def observe(self, image, heads=None):
         if self.closeup is not None:
-            self.heads = []
-            return self.closeup.observe(image)
+            observation = self.closeup.observe(image, heads=heads)
+            self.heads = self.closeup.heads
+            return observation
         h, w = image.shape[:2]
         scale = max(h, w) / 1280
         if self.misses >= 30 and not self.manual_lock:

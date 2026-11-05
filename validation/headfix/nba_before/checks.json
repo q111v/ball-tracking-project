@@ -1,0 +1,10 @@
+{
+  "visible_checks": 8,
+  "hits": 6,
+  "negative_checks": 9,
+  "wrong_frames": [
+    72,
+    75,
+    77
+  ]
+}

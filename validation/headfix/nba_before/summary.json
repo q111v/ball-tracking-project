@@ -1,0 +1,32 @@
+{
+  "frames": 117,
+  "observed_frames": 60,
+  "tracked_frames": 58,
+  "observation_fraction": 0.5128205128205128,
+  "tracked_fraction": 0.49572649572649574,
+  "unique_ids": [
+    1,
+    3
+  ],
+  "processing_fps": 0.14126505797495645,
+  "python": "3.12.14",
+  "initialization": "automatic",
+  "initial_box": null,
+  "device": "cpu",
+  "threads": 2,
+  "effective_threads": 2,
+  "mode": "forward",
+  "profile": "closeup",
+  "camera_compensation": true,
+  "camera_motion_states": {
+    "initial": 1,
+    "ok": 116
+  },
+  "trail_seconds": 0.7,
+  "trail_smoothing": 0.8,
+  "trail_resets": 3,
+  "model": "/workspace/work/pycharm-simple/models/basketball_base.pt",
+  "detector_sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
+  "input_sha256": "4b725473dfb15f27795d03683b6b35edd00472ffb86506799bd6c3d7f6415b13",
+  "notes": "Coverage is not accuracy. Missing frames have no invented boxes. Bidirectional mode is offline and may delay display by one chunk."
+}

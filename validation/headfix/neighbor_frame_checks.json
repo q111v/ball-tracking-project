@@ -1,0 +1,38 @@
+[
+  {
+    "frame": 41,
+    "error_px": 0.567446694413617,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 121,
+    "error_px": 7.091199541438679,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 141,
+    "error_px": 7.347617669944737,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 151,
+    "error_px": 2.889387682507173,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 171,
+    "error_px": 6.420989573016862,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 191,
+    "error_px": 12.646198175875831,
+    "source": "closeup_full",
+    "hit": true
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "frame": 120,
+    "error_px": 3.337476800675431,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 140,
+    "error_px": 3.313377667274233,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 150,
+    "error_px": 3.476451330336286,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 170,
+    "error_px": 6.4809698729688545,
+    "source": "closeup_full",
+    "hit": true
+  },
+  {
+    "frame": 190,
+    "error_px": 8.208550797552,
+    "source": "closeup_full_640",
+    "hit": true
+  }
+]

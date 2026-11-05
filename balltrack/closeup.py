@@ -3,6 +3,7 @@
 import cv2
 import numpy as np
 from .motion import CameraMotion
+from .head_memory import HeadMemory
 
 
 def iou(a, b):
@@ -29,12 +30,40 @@ def suppress_equipment(candidates, equipment):
     ]
 
 
+def closeup_heads(keypoints, person):
+    face = np.asarray(keypoints)[:5]
+    valid = face[face[:, 2] > 0.15]
+    height = person[3] - person[1]
+    if len(valid) >= 2:
+        center = np.average(valid[:, :2], axis=0, weights=valid[:, 2])
+        radius = min(
+            max(
+                10, float(np.max(np.linalg.norm(valid[:, :2] - center, axis=1))) * 1.35
+            ),
+            max(12, height * 0.07),
+        )
+        center = center - np.array([0, radius * 0.25])
+        return [(center, radius)]
+    points = np.asarray(keypoints)
+    if len(points) > 6 and np.all(points[5:7, 2] > 0.3):
+        center = points[5:7, :2].mean(axis=0) - np.array([0, height * 0.14])
+        return [(center, max(10, height * 0.065))]
+    return []
+
+
 class CloseupDetector:
-    def __init__(self, model, device, classes):
+    def __init__(self, model, device, classes, pose=None, head_regions=None):
         self.model, self.device, self.classes = model, device, classes
         self.equipment_classes = [
             k for k, v in model.names.items() if v.lower() in ("rim", "net")
         ]
+        self.pose, self.head_regions = pose, head_regions
+        self.head_memory = HeadMemory(max_age=4)
+        self.heads = []
+        self.people = []
+        self.wrists = []
+        self.airborne = False
+        self.frame_index = 0
         self.center = None
         self.velocity = np.zeros(2)
         self.misses = 0
@@ -59,11 +88,17 @@ class CloseupDetector:
         if not patch.size:
             return None
         resized = cv2.resize(patch, (20, 20))
-        return np.median(
-            cv2.cvtColor(resized[5:15, 5:15], cv2.COLOR_BGR2HSV), axis=(0, 1)
-        ).astype(float)
+        hsv = cv2.cvtColor(resized[5:15, 5:15], cv2.COLOR_BGR2HSV).astype(float)
+        color = np.median(hsv, axis=(0, 1))
+        valid = hsv[:, :, 1] >= max(20, color[1] * 0.5)
+        if valid.any():
+            angle = np.deg2rad(hsv[:, :, 0][valid] * 2)
+            color[0] = (
+                np.rad2deg(np.arctan2(np.sin(angle).mean(), np.cos(angle).mean())) / 2
+            ) % 180
+        return color
 
-    def predict(self, image, region, global_search):
+    def predict(self, image, region, global_search, image_size=None):
         x, y, r, b = region
         if r - x < 12 or b - y < 12:
             return [], []
@@ -71,7 +106,7 @@ class CloseupDetector:
             image[y:b, x:r],
             classes=self.classes + self.equipment_classes,
             conf=0.06,
-            imgsz=960 if global_search else 640,
+            imgsz=image_size or (960 if global_search else 640),
             device=self.device,
             verbose=False,
             iou=0.4,
@@ -106,15 +141,24 @@ class CloseupDetector:
         scored = []
         for box, confidence, source in suppress_equipment(candidates, self.equipment):
             center = (box[:2] + box[2:]) / 2
+            # A head-core overlap is ambiguous, even with high detector confidence.
+            if any(
+                np.linalg.norm(center - head) < radius * 0.8
+                for head, radius in self.heads
+            ):
+                continue
             distance = 0 if prediction is None else np.linalg.norm(center - prediction)
             gate = max(60, (self.diameter or 10) * 3) + min(self.misses, 15) * 12
             if (
                 prediction is not None
                 and distance > gate
-                and not (source == "closeup_full" and confidence >= 0.3)
+                and not (
+                    source.startswith("closeup_full")
+                    and confidence >= (0.85 if self.airborne else 0.3)
+                )
             ):
                 continue
-            if confidence < (0.08 if source == "closeup_full" else 0.5):
+            if confidence < (0.06 if source.startswith("closeup_full") else 0.5):
                 continue
             score = confidence - 0.2 * min(1, distance / max(gate, 1))
             color = self.appearance(image, box)
@@ -128,13 +172,39 @@ class CloseupDetector:
             scored.append((score, box, confidence, source))
         return max(scored, key=lambda value: value[0]) if scored else None
 
-    def observe(self, image):
+    def observe(self, image, heads=None):
         h, w = image.shape[:2]
-        if self.misses >= 8:
+        if heads is not None:
+            self.heads = heads
+        elif self.pose is not None:
+            fresh = []
+            if self.frame_index % 3 == 0:
+                pose = self.pose.predict(
+                    image, conf=0.2, imgsz=960, device=self.device, verbose=False
+                )[0]
+                self.people = list(pose.boxes.xyxy.cpu().numpy())
+                self.wrists = []
+                if pose.keypoints is not None:
+                    for keypoints, person in zip(
+                        pose.keypoints.data.cpu().numpy(), pose.boxes.xyxy.cpu().numpy()
+                    ):
+                        fresh.extend(closeup_heads(keypoints, person))
+                        self.wrists.extend(
+                            point[:2].copy()
+                            for point in keypoints[9:11]
+                            if point[2] > 0.35
+                        )
+            if fresh:
+                self.head_memory.tracks = []
+            self.heads = self.head_memory.update(image, fresh)
+        self.frame_index += 1
+        if self.misses >= (20 if self.airborne else 8):
             self.center = None
             self.velocity[:] = 0
-            self.reference = None
-            self.diameter = None
+            # Retain learned ball appearance across a position loss for reacquisition.
+            if self.misses >= 90:
+                self.reference = None
+                self.diameter = None
         prediction = (
             None
             if self.center is None
@@ -165,6 +235,13 @@ class CloseupDetector:
         self.equipment_memory = remembered[-40:]
         self.equipment = [box for box, age in self.equipment_memory]
         chosen = self.choose(image, candidates, prediction)
+        if self.pose is not None and (chosen is None or chosen[2] < 0.15):
+            alternate, extra = self.predict(image, (0, 0, w, h), True, image_size=640)
+            self.equipment += extra
+            candidates += [
+                (box, conf, "closeup_full_640") for box, conf, _ in alternate
+            ]
+            chosen = self.choose(image, candidates, prediction)
         # Global context prevents a tight crop from confusing clothing or net with a ball.
         # Recover low/missing full-frame detections at a second scale near the last observation.
         anchor = prediction
@@ -181,6 +258,37 @@ class CloseupDetector:
             local, extra_equipment = self.predict(image, region, False)
             self.equipment += extra_equipment
             chosen = self.choose(image, candidates + local, prediction)
+        if (chosen is None or chosen[2] < 0.25) and self.pose is not None:
+            recovered = []
+            for person in sorted(
+                self.people, key=lambda box: box[3] - box[1], reverse=True
+            )[:2]:
+                height = person[3] - person[1]
+                region = (
+                    max(0, int(person[0] - 0.35 * height)),
+                    max(0, int(person[1] - 0.25 * height)),
+                    min(w, int(person[2] + 0.35 * height)),
+                    min(h, int(person[3] + 0.15 * height)),
+                )
+                values, extra_equipment = self.predict(image, region, False)
+                self.equipment += extra_equipment
+                for box, confidence, _ in values:
+                    color = self.appearance(image, box)
+                    if (
+                        self.reference is not None
+                        and color is not None
+                        and self.reference[1] > 60
+                        and color[1] < self.reference[1] * 0.35
+                    ):
+                        continue
+                    recovered.append((box, confidence, "closeup_person"))
+            chosen = self.choose(
+                image,
+                candidates
+                + recovered
+                + ([] if chosen is None else [(chosen[1], chosen[2], chosen[3])]),
+                prediction,
+            )
         if chosen is None:
             self.misses += 1
             return None
@@ -196,9 +304,16 @@ class CloseupDetector:
             else 0.8 * self.diameter + 0.2 * float(max(box[2:] - box[:2]))
         )
         color = self.appearance(image, box)
-        if color is not None:
-            self.reference = (
-                color if self.reference is None else 0.9 * self.reference + 0.1 * color
-            )
+        if confidence >= 0.4 and color is not None:
+            if self.reference is None:
+                self.reference = color
+            else:
+                delta = (color[0] - self.reference[0] + 90) % 180 - 90
+                self.reference[0] = (self.reference[0] + 0.1 * delta) % 180
+                self.reference[1:] = 0.9 * self.reference[1:] + 0.1 * color[1:]
+        if confidence >= 0.5 and self.wrists:
+            self.airborne = min(
+                np.linalg.norm(center - wrist) for wrist in self.wrists
+            ) > max(80, self.diameter * 3)
         self.misses = 0
         return box, confidence, source

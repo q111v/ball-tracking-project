@@ -55,7 +55,9 @@ class ShortGapPredictor:
             return None
         return point, uncertainty, elapsed / fps
 
-    def update(self, frame, fps, matrix, observation=None, shape=None):
+    def update(
+        self, frame, fps, matrix, observation=None, shape=None, blocked_heads=()
+    ):
         # Express all stored observed/predicted points in the current image coordinates.
         if matrix is None:
             self.clear()
@@ -92,6 +94,13 @@ class ShortGapPredictor:
             self.last_prediction = None
             return None
         point, uncertainty, horizon = predicted
+        if any(
+            np.linalg.norm(point - center) < radius * 0.8 + uncertainty
+            for center, radius in blocked_heads
+        ):
+            # A plausible extrapolation inside a face is still not a verified ball.
+            self.clear()
+            return None
         if shape is not None and not (
             0 <= point[0] < shape[1] and 0 <= point[1] < shape[0]
         ):

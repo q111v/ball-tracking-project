@@ -23,5 +23,20 @@
     "repository": "https://github.com/johnxie301/Yolo_v8n_basketball_shooting_practice",
     "sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
     "description": "Public pretrained basketball shooting model, ball class 0. No training performed in this project."
+  },
+  "basketball_closeup.pt": {
+    "description": "Public basketball_base.pt fine-tuned for partly visible held-ball examples; not trained from scratch.",
+    "sha256": "784809f0c3ca1811f8d667e038d6c650c372581dd325bc0d148dbbb9f305a15e",
+    "parent_sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
+    "source_video": "videos/basketball_10s.mp4",
+    "source_video_sha256": "f3dfb802831782333ff557d2f3a881f16292c32f671185371d3535aeeb6a848c",
+    "annotations": "training/closeup_annotations.json",
+    "train_frames": 24,
+    "validation_frames": 6,
+    "epochs": 18,
+    "seed": 17,
+    "imgsz": 640,
+    "freeze": 10,
+    "warning": "Validation uses neighboring frames of the same video, not an independent generalization benchmark; original parent training footage is not fully known."
   }
 }

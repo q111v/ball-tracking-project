@@ -66,3 +66,24 @@ def test_short_segments_still_form_a_dashed_line():
     predictor.draw(image, None)
     assert image[50, 14].sum() > 0
     assert image[50, 20].sum() < image[50, 14].sum() * 0.5
+
+
+def test_prediction_on_a_head_is_withheld_and_path_cleared():
+    predictor = ShortGapPredictor()
+    for frame in range(6):
+        predictor.update(frame, 30, I, (1, [100 + frame, 100], 20))
+    result = predictor.update(
+        6, 30, I, None, blocked_heads=[(np.array([106, 100]), 20)]
+    )
+    assert result is None
+    assert not predictor.path and not predictor.history
+
+
+def test_uncertainty_overlapping_head_is_also_withheld():
+    predictor = ShortGapPredictor()
+    for frame in range(6):
+        predictor.update(frame, 30, I, (1, [100 + frame, 100], 20))
+    result = predictor.update(
+        6, 30, I, None, blocked_heads=[(np.array([116, 100]), 10)]
+    )
+    assert result is None
