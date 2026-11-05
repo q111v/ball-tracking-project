@@ -1,68 +1,51 @@
-# 篮球检测与轨迹跟踪：PyCharm 源码版
+# 通用运动球检测与跟踪（PyCharm 版）
 
-兼容 Python 3.11、3.12。直接运行 `main.py`，无需使用批处理启动脚本。
+本分支为单独的通用版，与篮球专用版分开使用。官方 YOLOv8n COCO 权重检测 sports ball 类；Ultralytics 内置 ByteTrack 为多个球分配 ID。不区分篮球、足球、排球、网球等具体球种，不包含篮球专用模型、颜色筛选或针对 NBA 片段的微调。
 
-## 第一次打开
+## 运行
 
-1. 解压后用 PyCharm 的「打开」选择本文件所在目录。
-2. 在「设置 → 项目 → Python 解释器」选择之前已安装本项目依赖的解释器。不必重新下载 Anaconda 或重复安装整个环境。
-3. 打开 `main.py`，右键选择「运行 main」。默认测试随包提供的 `videos/nba.mp4`。
-
-如果提示 `No module named 'yaml'`，说明当前解释器缺少 PyYAML，或选错了解释器。先检查解释器是否为旧项目使用的那一个。确实缺少依赖时，可在 PyCharm 的解释器页面安装缺少的包（`yaml` 对应包名 `PyYAML`）。新环境则安装 `requirements.txt` 中的依赖。不要仅为这个报错重新安装 Anaconda。
-
-## 测试自己的视频
-
-只需修改 `main.py` 顶部这一行，再点击运行：
+1. 解压后用 PyCharm 打开包含 main.py 的整个文件夹。
+2. 使用之前安装好依赖的解释器，例如 E:\Anaconda\envs\PythonProject\python.exe。不要切回未安装依赖的 E:\python\python.exe。运行窗口第一行可确认实际解释器路径。
+3. 修改 main.py 顶部 VIDEO_PATH，右键运行 main.py。
 
 ```python
-VIDEO_PATH = r"C:\Users\QQQ\Desktop\篮球测试.mp4"
+VIDEO_PATH = r"C:\Users\QQQ\Desktop\足球测试.mp4"
 ```
 
-不要删除路径前的 `r`。程序以 main.py 所在目录解析相对路径，不依赖 PyCharm 工作目录。
+依赖与篮球版相同，不需要重复安装。新环境才需要安装 requirements.txt。支持 Python 3.11、3.12。已附 models/yolov8n.pt，无需首次启动下载权重。
 
-比赛转播使用 `SCENE = "broadcast"`；近距离投篮使用 `"closeup"`。自动选错球时，可以设置 `SELECT_BALL = True`，在首帧框住篮球并按回车。这属于人工初始化，实验记录中应注明。
+默认 videos/nba.mp4 是原来的 117 帧 NBA 短片，便于直观对比。videos/demo.mp4 是由 COCO 图片平移并添加遮挡生成的合成片段，不是实拍运动测试。来源见 videos 下的说明文件。
 
-默认双向处理会先分析一批帧，再显示结果。CPU 上需要等待，并非实时播放；设置 `PROCESSING_MODE = "forward"` 可改为单向处理。窗口中按 Q 或 ESC 停止；双向分析期间不会立即响应窗口按键。
+## 配置与输出
 
-## 结果与源码
+- IMAGE_SIZE=960：小球漏检可试 1280，但 CPU 变慢。不要因帧中偶然有框就认定跟踪稳定。
+- CONFIDENCE=0.1：候选检测阈值，降低会增加误检。创建新 ID 还要求满足 configs/bytetrack.yaml 中的 new_track_thresh=0.25。
+- DEVICE="cpu"：有兼容的 NVIDIA CUDA 环境才改为 "0"。
+- CAMERA_COMPENSATION=True：估计背景平移、旋转和缩放，让历史轨迹随画面移动。
+- TRAIL_SECONDS=0.7：仅显示最近 0.7 秒并淡出。
+- TRAIL_SMOOTHING=0.8：仅平滑显示轨迹；1.0 关闭平滑。
+- SHOW_WINDOW、SAVE_VIDEO：分别控制窗口和视频保存。窗口按 Q/ESC 结束。
 
-每次运行自动创建 `results/时间戳/`，包括处理视频 `annotated.mp4`、逐帧坐标 `tracks.csv`、摘要 `summary.json` 和观测记录。无需手动更换输出目录。
+每次结果自动保存在 results/时间戳/：annotated.mp4、tracks.csv、summary.json。CSV 保留原始框坐标，shot 与 id 共同标识轨迹；切镜头后不能仅凭相同数字 ID 判断为同一物理球。遮挡或漏检时不伪造球坐标，重新观测后断开旧线。
 
-- `main.py`：修改视频路径、设备及显示设置，项目运行入口。
-- `balltrack/video.py`：视频读取、双向检测、ByteTrack 关联、轨迹绘制与保存。
-- `balltrack/basketball.py`：YOLO 篮球检测、局部搜索和外观筛选。
-- `balltrack/head_memory.py`：利用人体姿态减少把头部识别成球。
-- `balltrack/temporal.py`：选择时间连续的检测结果。
-- `balltrack/history.py`、`runtime.py`：轨迹缓存与 CPU 线程设置。
-- `models/`：已附所需权重；`videos/`：示例视频及来源。
+模型逐帧单向处理，FPS 为包括推理、运动估计和绘制的端到端吞吐；窗口打开时还包含显示耗时。不与篮球版双向离线处理直接作为同条件速度对比。
 
-使用 Ultralytics 的内置 BYTETracker，没有独立跟踪框架。本篮球版针对单个比赛用球；最初的通用多球项目及完整实验保留在仓库 main 分支。精简的是操作和文件布局，未声称重新提高算法精度。
+## 源码
 
-## 能力边界与实验说明
+- main.py：视频路径和参数。
+- balltrack/general.py：模型.track(persist=True, tracker=...)、多球 ID、视频读写与 CSV。
+- balltrack/motion.py：光流与 RANSAC 相机运动估计。
+- balltrack/display_trail.py：短时渐隐、补偿和断线。
+- balltrack/runtime.py：CPU 线程配置。
+- configs/bytetrack.yaml：内置 ByteTrack 参数。
+- tests/：自动化测试，开发验证时需 pytest。
 
-通用 COCO sports ball 类覆盖多类运动球，但小目标、运动模糊、遮挡、球网重叠容易漏检。本版使用公开篮球预训练模型，并对随包 NBA 片段进行过微调，不能把该片段成绩当成独立泛化测试。来源和权重哈希见 models/SOURCES.json。
+## 局限与实验
 
-原片 117 帧中有 70 帧输出观测，8 个可见球人工检查点命中 7 个；另一个独立 NBA 片段仍跟踪不佳。因此不能保证任何篮球视频都精准。统计中的 observation_fraction 是有观测帧比例，不是准确率。遮挡和漏检帧不会伪造检测框，轨迹不会跨漏检帧连线；长遮挡后 ID 可能变化。
+sports ball 的训练覆盖面广，不代表能稳定检测任意球。远景足球、小球、模糊、遮挡、低清晰度转播都可能漏检；也可能把人头或其他圆形物误检为球。ByteTrack 依赖连续检测，漏检严重时无法修复，长遮挡后 ID 可能改变。该版不包含人体姿态排除模块。
 
-本版继续沿用已测试算法。源码版的 Python 3.11/3.12 验证结果见 VALIDATION.md。云端不验证 Windows 摄像头及桌面显示。
+二维背景补偿是近似，存在视差、镜头切换、纹理不足等限制；失败时清空旧轨迹。跟踪结果中的有框帧比例是覆盖率，不是检测准确率；没有人工真值不能宣称精准。本包的实测与失败结果见 VALIDATION.md。Windows 本地显示、摄像头和 GPU 未在云端验证；此简版仅提供本地视频入口。
 
-完整实验、失败案例及模型训练记录：
-https://github.com/q111v/ball-tracking-project/blob/main/docs/NBA_RESULTS.md
+本版模型没有使用示例视频训练。与见过 NBA 片段训练画面的篮球模型比较时，必须说明训练数据差异。推荐用独立视频人工标注中心点与可见性，分别统计误检、漏检、ID 切换、遮挡前后恢复与 FPS。
 
-本项目适合课程学习；请理解检测、关联和评估代码，并如实说明所用公开模型、修改内容及工具帮助。项目源码许可证见 LICENSE，第三方模型仍受其原许可证约束。
-
-## 镜头移动时的轨迹显示（本次更新）
-
-main.py 新增：
-
-```python
-CAMERA_COMPENSATION = True
-TRAIL_SECONDS = 0.7
-TRAIL_SMOOTHING = 0.8
-```
-
-背景特征点通过双向光流和 RANSAC 估计相邻帧的平移、旋转和缩放，把历史点对齐到当前画面。人体附近及画面顶部、底部的区域不参与估计。短轨迹随年龄淡出；漏检后重新出现、ID 变化、明显跳点、切镜头或运动估计失败时断开旧线。检测中心点、检测框和 CSV 坐标保持原始检测结果，只有轨迹线使用显示平滑。
-
-这是近似二维补偿：观众与球场的视差、快速摇镜、极端缩放和动态遮挡仍可能导致估计失败。失败时宁可清空旧线，不能保证每一帧都有连续轨迹。运动状态数量与轨迹重置次数写入 summary.json，便于检查补偿是否经常失败。
-
-只更新显示功能时替换 main.py、balltrack/video.py，并添加 balltrack/motion.py 与 balltrack/display_trail.py；不需要替换模型或重新安装依赖。替换 main.py 前保留自己的 VIDEO_PATH 配置。
+源码许可见 LICENSE。权重来源、哈希与 Ultralytics 授权说明见 models/SOURCE.json；第三方权重不由项目源码 MIT 许可证重新授权。

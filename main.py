@@ -1,54 +1,49 @@
-"""在 PyCharm 中修改下面的配置，然后右键运行本文件。"""
+"""PyCharm 通用运动球检测入口：修改视频路径后直接运行。"""
 
 from datetime import datetime
 from pathlib import Path
 
-# 换视频只改这一行。Windows 路径前面的 r 请保留。
 VIDEO_PATH = r"videos/nba.mp4"
-# 例如：VIDEO_PATH = r"C:\Users\QQQ\Desktop\篮球测试.mp4"
-
-DEVICE = "cpu"  # 有可用 NVIDIA CUDA 环境时可改成 "0"
-SCENE = "broadcast"  # 比赛转播用 broadcast；近距离投篮用 closeup
-SELECT_BALL = False  # True：在首帧框选篮球，回车确认
+# VIDEO_PATH = r"C:\Users\QQQ\Desktop\足球.mp4"
+MODEL_PATH = r"models/yolov8n.pt"  # 官方 COCO 通用权重，不是篮球专用模型
+DEVICE = "cpu"
+IMAGE_SIZE = 960  # 小球漏检可尝试 1280，CPU 会更慢
+CONFIDENCE = 0.1  # 这是候选检测阈值；新 ID 还受跟踪阈值约束
+CAMERA_COMPENSATION = True
+TRAIL_SECONDS = 0.7
+TRAIL_SMOOTHING = 0.8
 SAVE_VIDEO = True
 SHOW_WINDOW = True
-PROCESSING_MODE = "bidirectional"  # 双向处理较慢；forward 为单向处理
 THREADS = 2
-
-# 仅影响显示轨迹，CSV 仍保留原始检测坐标。
-CAMERA_COMPENSATION = True  # 让历史轨迹随镜头平移、缩放
-TRAIL_SECONDS = 0.7  # 只保留最近 0.7 秒，可改为 0.5 或 1.0
-TRAIL_SMOOTHING = 0.8  # 新位置权重；1.0 表示不平滑
 
 
 def main():
-    from balltrack.video import process_video
+    from balltrack.general import process_video
 
     root = Path(__file__).resolve().parent
     video = Path(VIDEO_PATH)
+    model = Path(MODEL_PATH)
     if not video.is_absolute():
         video = root / video
-    if not video.is_file():
-        raise FileNotFoundError(f"找不到视频，请修改 main.py 中的 VIDEO_PATH：{video}")
-
-    # 每次运行单独保存结果，避免覆盖之前的实验。
+    if not model.is_absolute():
+        model = root / model
     output = root / "results" / datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     result = process_video(
         video,
         output,
+        model_path=model,
         device=DEVICE,
-        profile=SCENE,
-        select_ball=SELECT_BALL,
-        save=SAVE_VIDEO,
-        show_window=SHOW_WINDOW,
-        mode=PROCESSING_MODE,
-        threads=THREADS,
+        image_size=IMAGE_SIZE,
+        confidence=CONFIDENCE,
         camera_compensation=CAMERA_COMPENSATION,
         trail_seconds=TRAIL_SECONDS,
         trail_smoothing=TRAIL_SMOOTHING,
+        save=SAVE_VIDEO,
+        show_window=SHOW_WINDOW,
+        threads=THREADS,
     )
-    print(f"处理完成，结果保存在：{output}")
-    print(f"总帧数：{result['frames']}，处理 FPS：{result['processing_fps']:.2f}")
+    print(f"结果保存在：{output}")
+    print(f"处理帧数：{result['frames']}，处理 FPS：{result['processing_fps']:.2f}")
 
 
 if __name__ == "__main__":

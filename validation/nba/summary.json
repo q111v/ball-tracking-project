@@ -1,0 +1,36 @@
+{
+  "frames": 117,
+  "observed_frames": 48,
+  "tracked_frames": 3,
+  "tracked_boxes": 3,
+  "observation_fraction": 0.41025641025641024,
+  "tracked_fraction": 0.02564102564102564,
+  "tracks": [
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      17
+    ]
+  ],
+  "processing_fps": 1.3476118232078387,
+  "python": "3.11.17",
+  "model": "/workspace/work/pycharm-general/models/yolov8n.pt",
+  "model_sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+  "input_sha256": "4b725473dfb15f27795d03683b6b35edd00472ffb86506799bd6c3d7f6415b13",
+  "ball_class": 32,
+  "image_size": 960,
+  "confidence": 0.1,
+  "device": "cpu",
+  "effective_threads": 2,
+  "camera_compensation": true,
+  "camera_motion_states": {
+    "initial": 1,
+    "ok": 116
+  },
+  "trail_seconds": 0.7,
+  "trail_smoothing": 0.8,
+  "notes": "Coverage is not accuracy. sports ball does not distinguish basketball/football. IDs are scoped to a shot. Ultralytics track output may exclude unconfirmed detections."
+}
