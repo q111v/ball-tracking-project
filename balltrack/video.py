@@ -15,7 +15,9 @@ import torch
 from ultralytics import YOLO
 
 from .basketball import BasketballTracker, assign_observation, new_tracker
-from .history import Trails
+from .motion import CameraMotion
+from .display_trail import DisplayTrail
+from collections import Counter
 from .temporal import select_trajectory, select_anchored_trajectory
 from .runtime import configure_model
 
@@ -65,6 +67,9 @@ def process_video(
     select_ball=False,
     initial_box=None,
     basketball_model=None,
+    camera_compensation=True,
+    trail_seconds=0.7,
+    trail_smoothing=0.8,
 ):
     if mode not in ("forward", "bidirectional"):
         raise ValueError("PROCESSING_MODE must be forward or bidirectional")
@@ -72,6 +77,8 @@ def process_video(
         raise ValueError("SCENE must be broadcast or closeup")
     if video is None or not Path(video).is_file():
         raise ValueError("Basketball mode requires an existing video file")
+    if not 0 < trail_seconds <= 10 or not 0 < trail_smoothing <= 1:
+        raise ValueError("Invalid trail duration or smoothing")
     if threads < 1 or max_frames < 0 or trail < 1:
         raise ValueError("Invalid thread/frame/trail arguments")
     if select_ball and (not show_window):
@@ -99,7 +106,9 @@ def process_video(
     frames = observed = tracked = 0
     ids = set()
     last_id = None
-    histories = Trails(trail, 45)
+    display_trail = DisplayTrail(trail_seconds, trail_smoothing)
+    camera = CameraMotion(camera_compensation)
+    motion_states = Counter()
     try:
         if not cap.isOpened():
             raise RuntimeError("Cannot open video")
@@ -265,10 +274,21 @@ def process_video(
                     )
                     image = cache_read(paths[i])
                     tick = time.perf_counter()
+                    matrix, motion_state = camera.update(
+                        image,
+                        head_cache[i],
+                        None if observation is None else observation[0],
+                    )
+                    motion_states[motion_state] += 1
+                    # Drop association state on a detected shot change.
+                    if motion_state == "cut":
+                        identity_tracker = new_tracker(fps)
+                        last_id = None
                     tid = assign_observation(
                         identity_tracker, observation, image.shape[:2]
                     )
-                    actual = []
+                    display_center = None
+                    diameter = 10
                     if observation is not None:
                         box, confidence, source = observation
                         observed += 1
@@ -277,7 +297,8 @@ def process_video(
                             ids.add(tid)
                             last_id = tid
                             tracked += 1
-                            actual = [(tid, center)]
+                            display_center = (box[:2] + box[2:]) / 2
+                            diameter = max(box[2] - box[0], box[3] - box[1])
                         x1, y1, x2, y2 = map(int, box)
                         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
                         cv2.circle(image, center, 3, (0, 0, 255), -1)
@@ -305,11 +326,11 @@ def process_video(
                             (0, 180, 255),
                             2,
                         )
-                    histories.update(frames, actual)
-                    for identity in list(histories.points):
-                        for a, b in histories.segments(identity):
-                            cv2.line(image, a, b, (255, 0, 255), 2)
-                    rate = read_frames / max(time.perf_counter() - started, 1e-9)
+                    display_trail.update(
+                        frames, fps, matrix, tid, display_center, diameter
+                    )
+                    display_trail.draw(image, frames, fps)
+                    rate = (frames + 1) / max(time.perf_counter() - started, 1e-9)
                     cv2.putText(
                         image,
                         f"Basketball | {mode} | process FPS:{rate:.1f}",
@@ -372,6 +393,11 @@ def process_video(
             effective_threads=torch.get_num_threads(),
             mode=mode,
             profile=profile,
+            camera_compensation=camera_compensation,
+            camera_motion_states=dict(motion_states),
+            trail_seconds=trail_seconds,
+            trail_smoothing=trail_smoothing,
+            trail_resets=display_trail.resets,
             model=str(model),
             detector_sha256=sha256_file(model),
             input_sha256=sha256_file(video),

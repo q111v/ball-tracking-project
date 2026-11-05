@@ -15,6 +15,11 @@ SHOW_WINDOW = True
 PROCESSING_MODE = "bidirectional"  # 双向处理较慢；forward 为单向处理
 THREADS = 2
 
+# 仅影响显示轨迹，CSV 仍保留原始检测坐标。
+CAMERA_COMPENSATION = True  # 让历史轨迹随镜头平移、缩放
+TRAIL_SECONDS = 0.7  # 只保留最近 0.7 秒，可改为 0.5 或 1.0
+TRAIL_SMOOTHING = 0.8  # 新位置权重；1.0 表示不平滑
+
 
 def main():
     from balltrack.video import process_video
@@ -38,6 +43,9 @@ def main():
         show_window=SHOW_WINDOW,
         mode=PROCESSING_MODE,
         threads=THREADS,
+        camera_compensation=CAMERA_COMPENSATION,
+        trail_seconds=TRAIL_SECONDS,
+        trail_smoothing=TRAIL_SMOOTHING,
     )
     print(f"处理完成，结果保存在：{output}")
     print(f"总帧数：{result['frames']}，处理 FPS：{result['processing_fps']:.2f}")

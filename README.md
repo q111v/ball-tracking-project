@@ -50,3 +50,19 @@ VIDEO_PATH = r"C:\Users\QQQ\Desktop\篮球测试.mp4"
 https://github.com/q111v/ball-tracking-project/blob/main/docs/NBA_RESULTS.md
 
 本项目适合课程学习；请理解检测、关联和评估代码，并如实说明所用公开模型、修改内容及工具帮助。项目源码许可证见 LICENSE，第三方模型仍受其原许可证约束。
+
+## 镜头移动时的轨迹显示（本次更新）
+
+main.py 新增：
+
+```python
+CAMERA_COMPENSATION = True
+TRAIL_SECONDS = 0.7
+TRAIL_SMOOTHING = 0.8
+```
+
+背景特征点通过双向光流和 RANSAC 估计相邻帧的平移、旋转和缩放，把历史点对齐到当前画面。人体附近及画面顶部、底部的区域不参与估计。短轨迹随年龄淡出；漏检后重新出现、ID 变化、明显跳点、切镜头或运动估计失败时断开旧线。检测中心点、检测框和 CSV 坐标保持原始检测结果，只有轨迹线使用显示平滑。
+
+这是近似二维补偿：观众与球场的视差、快速摇镜、极端缩放和动态遮挡仍可能导致估计失败。失败时宁可清空旧线，不能保证每一帧都有连续轨迹。运动状态数量与轨迹重置次数写入 summary.json，便于检查补偿是否经常失败。
+
+只更新显示功能时替换 main.py、balltrack/video.py，并添加 balltrack/motion.py 与 balltrack/display_trail.py；不需要替换模型或重新安装依赖。替换 main.py 前保留自己的 VIDEO_PATH 配置。
