@@ -26,6 +26,7 @@ def parser():
     source = p.add_mutually_exclusive_group(required=True)
     source.add_argument("--video", type=Path)
     source.add_argument("--camera", type=int)
+    p.add_argument("--basketball-mode", action="store_true", help="Single basketball broadcast mode with local YOLO and head exclusion")
     p.add_argument("--color-assist", action="store_true", help="Optional YOLO-seeded color observations for a single distinct-color ball")
     p.add_argument("--model", default="yolov8s.pt")
     p.add_argument("--device", default="cpu", help="cpu / 0 / cuda:0")
@@ -42,6 +43,9 @@ def parser():
 
 
 def run(args):
+    if getattr(args, "basketball_mode", False):
+        from .basketball_app import run as run_basketball
+        return run_basketball(args)
     if not 0 < args.conf <= 1 or args.imgsz < 32 or args.trail < 1 or args.threads < 1 or args.max_frames < 0:
         raise ValueError("Invalid confidence, image size, trail, thread or frame limit")
     if args.video and not args.video.is_file():

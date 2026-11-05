@@ -1,0 +1,12 @@
+{
+  "basketball.pt": {
+    "url": "https://raw.githubusercontent.com/johnxie301/Yolo_v8n_basketball_shooting_practice/main/best.pt",
+    "repository": "https://github.com/johnxie301/Yolo_v8n_basketball_shooting_practice",
+    "sha256": "010376003d9c899ce49b71f8825253c5e2a32501bd11cfddc2e3e0018dab21f2",
+    "description": "Public pretrained basketball shooting model, ball class 0. No training performed in this project."
+  },
+  "yolov8n-pose.pt": {
+    "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-pose.pt",
+    "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+  }
+}

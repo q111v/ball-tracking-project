@@ -1,0 +1,9 @@
+{
+  "url": "https://raw.githubusercontent.com/abdullahtarek/basketball_analysis/main/input_videos/video_1.mp4",
+  "sha256": "4b725473dfb15f27795d03683b6b35edd00472ffb86506799bd6c3d7f6415b13",
+  "frames": 117,
+  "fps": 30,
+  "width": 1280,
+  "height": 720,
+  "note": "Original complete short NBA clip, no cropping, no precomputed tracks. Third-party footage retains its original rights."
+}
