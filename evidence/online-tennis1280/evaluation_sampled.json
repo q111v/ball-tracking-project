@@ -1,0 +1,35 @@
+{
+  "metrics": {
+    "sampled_visible": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 5,
+      "id_switches": 0,
+      "matched_with_id": 0,
+      "precision": 0.0,
+      "detection_success_rate_recall": 0.0,
+      "tracked_match_fraction": null,
+      "id_stability_proxy": null
+    },
+    "overall": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 5,
+      "id_switches": 0,
+      "matched_with_id": 0,
+      "precision": 0.0,
+      "detection_success_rate_recall": 0.0,
+      "tracked_match_fraction": null,
+      "id_stability_proxy": null
+    }
+  },
+  "occlusion_recoveries_evaluated": 0,
+  "same_id_after_occlusion": null,
+  "occlusion_events_without_rematch": 0,
+  "note": "Stability is a defined proxy, not IDF1/MOTA. Invisible objects excluded from recall; predictions remain FP.",
+  "processing_fps_by_phase": {
+    "sampled_visible": 4.278793084839264,
+    "overall": 4.278793084839264
+  },
+  "fps_warmup_frames": 5
+}

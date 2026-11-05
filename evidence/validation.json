@@ -1,0 +1,32 @@
+{
+  "data/demo/input.mp4": {
+    "decoded_frames": 90,
+    "height": 640,
+    "width": 480
+  },
+  "evidence/demo-python312/annotated.mp4": {
+    "decoded_frames": 90,
+    "height": 640,
+    "width": 480
+  },
+  "evidence/demo-python311/annotated.mp4": {
+    "decoded_frames": 90,
+    "height": 640,
+    "width": 480
+  },
+  "evidence/synthetic-buffer30/synthetic.mp4": {
+    "decoded_frames": 120,
+    "height": 360,
+    "width": 640
+  },
+  "evidence/synthetic-buffer2/synthetic.mp4": {
+    "decoded_frames": 120,
+    "height": 360,
+    "width": 640
+  },
+  "python312_pip_check": "No broken requirements found.",
+  "python311_pip_check": "No broken requirements found.",
+  "gpu_tested": false,
+  "windows_tested": false,
+  "camera_tested": false
+}

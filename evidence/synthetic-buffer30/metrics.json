@@ -1,0 +1,54 @@
+{
+  "metrics": {
+    "before": {
+      "tp": 90,
+      "fp": 0,
+      "fn": 0,
+      "id_switches": 0,
+      "matched_with_id": 90,
+      "precision": 1.0,
+      "detection_success_rate_recall": 1.0,
+      "tracked_match_fraction": 1.0,
+      "id_stability_proxy": 1.0
+    },
+    "overall": {
+      "tp": 232,
+      "fp": 0,
+      "fn": 0,
+      "id_switches": 0,
+      "matched_with_id": 232,
+      "precision": 1.0,
+      "detection_success_rate_recall": 1.0,
+      "tracked_match_fraction": 1.0,
+      "id_stability_proxy": 1.0
+    },
+    "occluded": {
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "id_switches": 0,
+      "matched_with_id": 8,
+      "precision": 1.0,
+      "detection_success_rate_recall": 1.0,
+      "tracked_match_fraction": 1.0,
+      "id_stability_proxy": 1.0
+    },
+    "after": {
+      "tp": 134,
+      "fp": 0,
+      "fn": 0,
+      "id_switches": 0,
+      "matched_with_id": 134,
+      "precision": 1.0,
+      "detection_success_rate_recall": 1.0,
+      "tracked_match_fraction": 1.0,
+      "id_stability_proxy": 1.0
+    }
+  },
+  "occlusion_recoveries_evaluated": 1,
+  "same_id_after_occlusion": 1.0,
+  "occlusion_events_without_rematch": 0,
+  "note": "Stability is a defined proxy, not IDF1/MOTA. Invisible objects excluded from recall; predictions remain FP.",
+  "mode": "tracker_only_injected_detections",
+  "track_buffer": 30
+}

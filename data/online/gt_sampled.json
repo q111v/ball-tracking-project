@@ -1,0 +1,85 @@
+{
+  "description": "Exploratory manual annotations on five clearly visible sampled frames; not a full video ground truth. Pixel bounds include motion blur. Frame 120 was visually ambiguous and excluded.",
+  "frames": [
+    {
+      "frame": 30,
+      "phase": "sampled_visible",
+      "objects": [
+        {
+          "id": 1,
+          "bbox": [
+            895,
+            326,
+            906,
+            339
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "phase": "sampled_visible",
+      "objects": [
+        {
+          "id": 1,
+          "bbox": [
+            906,
+            250,
+            920,
+            263
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "frame": 90,
+      "phase": "sampled_visible",
+      "objects": [
+        {
+          "id": 1,
+          "bbox": [
+            645,
+            747,
+            665,
+            765
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "frame": 150,
+      "phase": "sampled_visible",
+      "objects": [
+        {
+          "id": 1,
+          "bbox": [
+            913,
+            340,
+            936,
+            365
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "frame": 180,
+      "phase": "sampled_visible",
+      "objects": [
+        {
+          "id": 1,
+          "bbox": [
+            1274,
+            725,
+            1300,
+            747
+          ],
+          "visible": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "url": "https://raw.githubusercontent.com/abdullahtarek/tennis_analysis/main/input_videos/input_video.mp4",
+  "repository": "https://github.com/abdullahtarek/tennis_analysis",
+  "download_date": "2026-11-05",
+  "sha256": "5f2584a2010864d5d8624c325d7f0571d48bd0756164657ef603dc8a97bab22d",
+  "frames": 214,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "note": "Publicly downloadable third-party match footage; original rights retained. Used as a functional test, not a licensed new training dataset."
+}
