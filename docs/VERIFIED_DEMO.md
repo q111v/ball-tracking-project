@@ -60,3 +60,5 @@ python run_verified_demo.py --no-display
 - 本次云端CPU处理吞吐率：3.16 FPS；视频按原始30 FPS保存。功能验证通过，不声称CPU实时30 FPS。
 - Python 3.11、3.12 各通过11项自动化测试，含无YOLO种子不输出颜色框、球不存在时不伪造检测、辅助失效重置等。
 - 处理视频重新解码检查必须为120帧；抽看第0、40、80、119帧，球框和ID跟随球体，紫红线确为本项目生成。预览见 `evidence/verified-demo/preview.jpg`。
+
+Python 3.11 也另行完整复跑最终120帧，连续性审计PASS、保存视频重新解码120帧；对应summary、CSV和审计报告见 `evidence/verified-demo-python311/`。
