@@ -1,0 +1,19 @@
+{
+  "frames": 120,
+  "frames_with_id": 120,
+  "id_coverage": 1.0,
+  "unique_ids": [
+    1
+  ],
+  "longest_untracked_gap_frames": 0,
+  "observed_path_length_px": 2066.2615068347527,
+  "processing_fps": 3.155113248119612,
+  "criteria": {
+    "minimum_frames": 90,
+    "minimum_id_coverage": 0.9,
+    "maximum_gap_frames": 8,
+    "minimum_path_length_px": 200
+  },
+  "note": "Output continuity audit only; not detection recall, IDF1 or proof of accuracy on other videos.",
+  "passed": true
+}

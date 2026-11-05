@@ -16,6 +16,7 @@ import ultralytics
 from ultralytics import YOLO
 
 from .history import Trails
+from .color_assist import ColorAssist
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,7 +26,8 @@ def parser():
     source = p.add_mutually_exclusive_group(required=True)
     source.add_argument("--video", type=Path)
     source.add_argument("--camera", type=int)
-    p.add_argument("--model", default="yolo11n.pt")
+    p.add_argument("--color-assist", action="store_true", help="Optional YOLO-seeded color observations for a single distinct-color ball")
+    p.add_argument("--model", default="yolov8s.pt")
     p.add_argument("--device", default="cpu", help="cpu / 0 / cuda:0")
     p.add_argument("--imgsz", type=int, default=640)
     p.add_argument("--conf", type=float, default=0.1)
@@ -53,6 +55,9 @@ def run(args):
     classes = [i for i, name in names.items() if name == "sports ball"]
     if not classes:
         raise ValueError("Model must contain the COCO sports ball class")
+    assistant = ColorAssist(classes[0]) if args.color_assist else None
+    if assistant is not None:
+        model.add_callback("on_predict_postprocess_end", assistant)
     cap = cv2.VideoCapture(str(args.video)) if args.video else cv2.VideoCapture(args.camera, cv2.CAP_DSHOW if platform.system() == "Windows" else cv2.CAP_ANY)
     writer = None
     frames, infer_seconds, processing_seconds = 0, 0.0, 0.0
@@ -106,7 +111,7 @@ def run(args):
             trails.update(frames, observations)
             for tid, _ in observations:
                 for a, b in trails.segments(tid):
-                    cv2.line(frame, a, b, (0,255,0), 2)
+                    cv2.line(frame, a, b, (255,0,255), 3)
             # Running processing rate excludes capture, display waits, and startup; includes inference/render/write.
             current_fps = (frames+1) / max(processing_seconds + time.perf_counter()-tick, 1e-9)
             cv2.putText(frame, f"FPS:{current_fps:.1f} visible:{len(observations)}", (12,28), cv2.FONT_HERSHEY_SIMPLEX, .7, (0,255,255), 2)
@@ -139,6 +144,7 @@ def run(args):
                        device=args.device, args={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()},
                        tracker_yaml=args.tracker.read_text(encoding="utf-8"),
                        model_sha256=hashlib.sha256(model_path.read_bytes()).hexdigest() if model_path.is_file() else None)
+        summary["color_assist_inserted_observations"] = assistant.inserted if assistant else 0
         (args.output / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
         print(json.dumps(summary, indent=2))
         return summary

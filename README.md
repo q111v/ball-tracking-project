@@ -1,8 +1,12 @@
 # 基于 YOLO 与 ByteTrack 的球体检测与运动轨迹跟踪系统
 
-Python 课程设计；以命令行提供完整视频处理流程。目标环境：Windows 11、Python **3.11 / 3.12**、PyCharm + Anaconda。使用公开 COCO 预训练 `yolo11n.pt`，通过 **Ultralytics 内置 ByteTrack** 跟踪，不依赖独立 ByteTrack、YOLOX 或 supervision 框架。`lap` 是内置跟踪所需的匹配计算依赖。
+Python 课程设计；以命令行提供完整视频处理流程。目标环境：Windows 11、Python **3.11 / 3.12**、PyCharm + Anaconda。默认使用公开 COCO 预训练 `yolov8s.pt`，同时保留轻量 `yolo11n.pt`，通过 **Ultralytics 内置 ByteTrack** 跟踪，不依赖独立 ByteTrack、YOLOX 或 supervision 框架。`lap` 是内置跟踪所需的匹配计算依赖。
 
-> **新增真实视频验证：** 已下载网上 214 帧网球比赛视频并完整测试。默认配置未检出球，1280 输入虽有检测框但没有形成有效 ID，当前版本未满足该远景高速球场景的稳定跟踪目标。原视频、处理结果和失败分析均随包提供，详见 `docs/ONLINE_VIDEO_TEST.md`。Windows 辅助脚本位于 `windows/`。
+> **推荐入口：** 安装依赖后运行 `python run_verified_demo.py`。随包提供真实近景球体视频，使用 YOLOv8s、可选颜色观测辅助和内置 ByteTrack 产生 ID 与紫红色运动轨迹；完整方法及适用范围见 `docs/VERIFIED_DEMO.md`。原远景网球失败记录保留，不宣称已解决远景高速球问题。
+
+![已验证的球体ID与运动轨迹](evidence/verified-demo/preview.jpg)
+
+随包4秒真实近景视频的最终复跑：120/120帧保持同一ID、零缺失，结果视频在 `evidence/verified-demo/annotated.mp4`。这是对指定片段的验证，不保证任意视频；46个观察框来自可选颜色辅助。
 
 ## 1. Windows 安装与第一次运行
 
@@ -13,7 +17,7 @@ conda create -n balltrack python=3.12 -y
 conda activate balltrack
 python -m pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -r requirements-dev.txt
-python main.py --video data/demo/input.mp4 --save --output runs/my_first_demo
+python run_verified_demo.py
 ```
 
 使用 Python 3.11 时仅将建环境命令改为 `python=3.11`。先装 CPU 版 PyTorch，再装项目依赖，可避免默认安装不需要的 GPU 组件。首次安装需要网络；项目随附公开预训练权重和小型演示视频，不需要训练。项目目录建议放在较短路径，例如 `D:\Projects\ball-tracking-project`。命令必须在项目根目录执行。
@@ -25,7 +29,7 @@ python main.py --video data/demo/input.mp4 --save --output runs/my_first_demo
 1. Open 打开项目根目录。
 2. Settings → Project → Python Interpreter → Add Interpreter → Existing Conda Environment，选 `balltrack` 环境的 `python.exe`。
 3. Run/Debug Configurations 新建 Python：Script path 选择 `main.py`，Working directory 选择项目根目录。
-4. Parameters 填 `--video data/demo/input.mp4 --save --output runs/pycharm_demo`，运行。
+4. 推荐将 Script path 改选 `run_verified_demo.py`，Parameters 留空，直接运行。
 5. 如命令行能运行而 PyCharm 提示缺包，检查解释器是否选到了同一 Conda 环境。
 
 ## 2. 输入、保存与 GPU
@@ -71,7 +75,8 @@ ball-tracking-project/
 ├── main.py                     启动入口
 ├── requirements.txt            运行依赖（固定主要版本）
 ├── requirements-dev.txt        加上 pytest 的测试依赖
-├── yolo11n.pt                  公开预训练权重
+├── yolov8s.pt                  推荐演示使用的公开预训练权重
+├── yolo11n.pt                  可选轻量模型
 ├── balltrack/
 │   ├── app.py                  输入、检测跟踪、绘图、保存、运行统计
 │   ├── history.py              有界轨迹、丢失清理、遮挡断点
@@ -114,7 +119,7 @@ COCO 类别 `sports ball`（标准类号 32，程序按类名查找）可覆盖�
 
 提高 imgsz、较大模型或调整拍摄距离可能提高召回率，但会降低 CPU FPS。先固定拍摄条件，用标注评估，再决定是否需要少量领域数据微调；本项目不从零训练。预训练模型也可能曾见过 COCO 演示图，因此演示仅作为功能回归，不能作为独立泛化成绩。
 
-权重来源：https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt 。Ultralytics 代码与模型的使用遵循其 AGPL-3.0 / 商业许可说明：https://www.ultralytics.com/license 。演示图片的来源见 `data/demo/SOURCE.txt`；COCO 图像各自保留原始许可。项目原创代码许可见 LICENSE。
+权重来源：https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8s.pt 及 https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt 。Ultralytics 代码与模型的使用遵循其 AGPL-3.0 / 商业许可说明：https://www.ultralytics.com/license 。演示图片的来源见 `data/demo/SOURCE.txt`；COCO 图像各自保留原始许可。项目原创代码许可见 LICENSE。
 
 ## 7. 测试视频与可重复实验
 
