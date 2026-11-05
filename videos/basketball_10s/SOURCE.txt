@@ -1,0 +1,11 @@
+Basketball test clip: 10.000 seconds, 300 frames, 30 FPS, 960x540, MP4/H.264.
+Continuous source interval: 0 to 10 seconds; not looped, not slowed, no ball annotations added.
+Original source frame rate: 30000/1001; resampled to 30 FPS when encoding. Audio omitted.
+Source repository: https://github.com/avishah3/AI-Basketball-Shot-Detection-Tracker
+Source file: https://raw.githubusercontent.com/avishah3/AI-Basketball-Shot-Detection-Tracker/4eb004437919f3667dce3d0a95575a510d763485/video_test_5.mp4
+Original footage rights remain with the respective owners. Repository availability does not establish a separate footage license.
+Validation: decoded all 300 frames; checked sample frames. Detection/tracking accuracy for this full 10-second clip has not been evaluated.
+
+使用方法：把 basketball_10s.mp4 复制到项目 videos 文件夹，在 main.py 设置：
+VIDEO_PATH = r"videos/basketball_10s.mp4"
+通用版直接运行；篮球专用版建议另外设置 SCENE = "closeup"。
