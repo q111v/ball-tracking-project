@@ -1,0 +1,11 @@
+{
+  "source": "https://raw.githubusercontent.com/avishah3/AI-Basketball-Shot-Detection-Tracker/4eb004437919f3667dce3d0a95575a510d763485/video_test_5.mp4",
+  "source_start_s": 20,
+  "frames": 900,
+  "fps": 30.0,
+  "duration_s": 30.0,
+  "width": 960,
+  "height": 540,
+  "sha256": "83a24b5a5230365c47a00f02c38bad8409f87390d6f76c797221f70cd9eed852",
+  "notes": "Contiguous source segment, normal playback speed, 29.97fps resampled to 30fps, no looping/padding or added annotations; audio omitted. The source footage itself may contain edits. Same recording/person/venue as training material, later interval not used in our fine-tuning. This is not an independent-domain generalization benchmark. Original rights remain with respective owners."
+}
