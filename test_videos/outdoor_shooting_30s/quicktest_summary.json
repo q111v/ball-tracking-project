@@ -1,0 +1,56 @@
+{
+  "frames": 90,
+  "observed_frames": 66,
+  "yolo_observed_frames": 66,
+  "appearance_recovered_frames": 0,
+  "recovery_notes": "All observed boxes come from YOLO. Experimental color recovery was rejected and is not used.",
+  "predicted_frames": 0,
+  "predict_occlusion": false,
+  "prediction_seconds": 0.3,
+  "prediction_notes": "Predictions are short image-space extrapolations, not detections or calibrated confidence intervals. They never update ByteTrack or observation counts.",
+  "tracked_frames": 49,
+  "observation_fraction": 0.7333333333333333,
+  "tracked_fraction": 0.5444444444444444,
+  "unique_ids": [
+    1
+  ],
+  "processing_fps": 2.132507694038492,
+  "python": "3.12.14",
+  "initialization": "automatic",
+  "initial_box": null,
+  "device": "cpu",
+  "threads": 2,
+  "effective_threads": 2,
+  "mode": "forward",
+  "profile": "closeup",
+  "requested_profile": "auto",
+  "scene_selection": [
+    {
+      "frame": 0,
+      "scene": "closeup",
+      "people": 1
+    },
+    {
+      "frame": 10,
+      "scene": "closeup",
+      "people": 1
+    },
+    {
+      "frame": 20,
+      "scene": "closeup",
+      "people": 1
+    }
+  ],
+  "camera_compensation": true,
+  "camera_motion_states": {
+    "initial": 1,
+    "ok": 89
+  },
+  "trail_seconds": 0.7,
+  "trail_smoothing": 0.8,
+  "trail_resets": 2,
+  "model": "/workspace/work/pycharm-prediction/models/basketball_closeup.pt",
+  "detector_sha256": "784809f0c3ca1811f8d667e038d6c650c372581dd325bc0d148dbbb9f305a15e",
+  "input_sha256": "60ec20b52ac487858cc29cb82094c354a37175250a29453c07bf66a85132f227",
+  "notes": "Coverage is not accuracy. Missing frames have no invented boxes. Bidirectional mode is offline and may delay display by one chunk."
+}

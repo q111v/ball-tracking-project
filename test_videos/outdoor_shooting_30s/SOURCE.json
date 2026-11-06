@@ -1,0 +1,9 @@
+{
+  "source": "https://raw.githubusercontent.com/icarusoars/bball-shot-tracker/14049bcea8610bcb76c0cceb47e98867b86802dc/data/shooting_vids/shooting6.mp4",
+  "start_s": 30,
+  "output_duration_s": 30,
+  "frames": 900,
+  "fps": 30.0,
+  "sha256": "60ec20b52ac487858cc29cb82094c354a37175250a29453c07bf66a85132f227",
+  "notes": "Different person/location from our training material; not used in our fine-tuning. Parent public model training footage is not fully known. Contiguous excerpt, playback speed unchanged, variable frame rate resampled to constant 30FPS, audio removed, no added annotations. Original footage rights remain with its owners."
+}
